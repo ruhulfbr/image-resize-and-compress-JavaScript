@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bootstrap Sample</title>
+    
+    <!-- Add Bootstrap CSS link -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+
+<div class="container">
+
+	<div class="mt-5">
+
+		<center>
+			<input type="file" class="col-md-5" id="imageInput" accept="image/*">
+		</center>
+
+		<hr />
+
+		<div class="row d-flex justify-content-center align-items-center">
+			<div class="col-md-4">
+				<h5>Main Img</h5>
+				<img src="" id="main_img" style="width: 100%" />
+			</div>
+
+			<div class="col-md-4">
+				<h5>Compress Img</h5>
+				<img src="" id="new_img" style="width: 100%" />
+			</div>
+
+		</div>
+
+	</div>
+    
+
+
+
+</div>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+<script type="text/javascript">
+	const imageInput = document.getElementById('imageInput');
+	imageInput.addEventListener('change', handleImageSelect);
+
+
+	function handleImageSelect(event) {
+	  const file = event.target.files[0];
+
+	  if (file) {
+	    // Read the selected image as a data URL
+	    const reader = new FileReader();
+	    reader.onload = function (e) {
+	      const imgDataUrl = e.target.result;
+
+	      $('#main_img').attr('src', imgDataUrl)
+
+	      // Resize and compress the image
+	      resizeAndCompressImage(imgDataUrl);
+	    };
+
+	    reader.readAsDataURL(file);
+	  }
+	}
+
+
+	function resizeAndCompressImage(dataUrl) {
+	  const img = new Image();
+	  img.src = dataUrl;
+
+	  img.onload = function () {
+	    const canvas = document.createElement('canvas');
+	    const ctx = canvas.getContext('2d');
+
+	    // Set the desired dimensions for the resized image
+	    const maxWidth = 1500; // Adjust this as needed
+	    const maxHeight = 1000; // Adjust this as needed
+
+	    let newWidth = img.width;
+	    let newHeight = img.height;
+
+	    if (img.width > maxWidth) {
+	      newWidth = maxWidth;
+	      newHeight = (img.height * maxWidth) / img.width;
+	    }
+
+	    if (newHeight > maxHeight) {
+	      newHeight = maxHeight;
+	      newWidth = (img.width * maxHeight) / img.height;
+	    }
+
+	    canvas.width = newWidth;
+	    canvas.height = newHeight;
+
+	    // Draw the resized image onto the canvas
+	    ctx.drawImage(img, 0, 0, newWidth, newHeight);
+
+	    // Convert the canvas content back to a data URL with compression
+	    const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.9); // Adjust the compression quality as needed
+
+	    $('#new_img').attr('src', compressedDataUrl)
+
+	    // You can now use 'compressedDataUrl' for your purposes (e.g., upload or display)
+	  };
+	}
+</script>
+
+</body>
+</html>
